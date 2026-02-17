@@ -1,5 +1,7 @@
 # voidkernel
 
+NOTE: created by my orchestration engine volt, basically claude code. but completely from scratch with a lot of lessons learned... so beware of bugs and incompatibilities.
+
 CachyOS-patched Linux kernel for Void Linux. BORE scheduler, Clang LTO, tuned for low-latency gaming.
 
 **Target**: Intel i9-14900HX · NVIDIA · Void Linux · XFS
@@ -17,7 +19,7 @@ sudo ./install.sh
 sudo reboot
 ```
 
-## Optional: PGO (10-20% perf boost)
+## Optional: PGO
 
 After booting the new kernel, collect a profile while gaming, then rebuild:
 
