@@ -506,16 +506,6 @@ main() {
     echo " Verify after reboot:"
     echo "   uname -r"
     echo "   nvidia-smi"
-    if [[ -f "${SCRIPT_DIR}/autofdo.profdata" ]]; then
-        echo " "
-        echo " ★ Built with AutoFDO profile-guided optimization"
-    else
-        echo " "
-        echo " Optional PGO (10-20% perf boost):"
-        echo "   ./profile_and_rebuild.sh collect  # play games for 2min"
-        echo "   ./profile_and_rebuild.sh build    # rebuild with profiles"
-        echo "   sudo ./install.sh                 # reinstall"
-    fi
     echo "=============================================="
 }
 

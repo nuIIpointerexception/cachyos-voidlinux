@@ -19,18 +19,6 @@ sudo ./install.sh
 sudo reboot
 ```
 
-## Optional: PGO
-
-After booting the new kernel, collect a profile while gaming, then rebuild:
-
-```bash
-./profile_and_rebuild.sh collect   # play games for ~2 min
-./profile_and_rebuild.sh build     # rebuild with profile data
-sudo ./install.sh                  # reinstall
-```
-
-AutoFDO profiles are detected automatically on rebuild.
-
 ## What gets installed
 
 **Kernel**: 6.19.x + CachyOS patches + BORE scheduler + Clang ThinLTO
@@ -53,7 +41,6 @@ sudo xbps-install -S base-devel ncurses-devel openssl-devel elfutils-devel \
 ## Files
 
 ```
-build.sh                 # Download, patch, configure, compile
-install.sh               # Install kernel + persistent system tuning
-profile_and_rebuild.sh   # AutoFDO profiling for PGO rebuilds
+build.sh     # Download, patch, configure, compile
+install.sh   # Install kernel + persistent system tuning
 ```

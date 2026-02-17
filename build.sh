@@ -37,14 +37,10 @@ KERNEL_DIR="${BUILD_DIR}/linux-${KERNEL_VERSION}"
 PATCHES_DIR="${BUILD_DIR}/patches-${KERNEL_BASE}"
 NPROC=$(nproc)
 
-# Use Clang/LLVM toolchain for LTO + AutoFDO + Propeller support
+# Use Clang/LLVM toolchain for LTO
 export LLVM=1
 export CC=clang
 MAKE_OPTS="LLVM=1 -j${NPROC}"
-
-# AutoFDO profile (set by profile_and_rebuild.sh after profiling)
-AUTOFDO_PROFILE="${SCRIPT_DIR}/autofdo.profdata"
-PROPELLER_PROFILE="${SCRIPT_DIR}/propeller"
 
 # Colors for output
 RED='\033[0;31m'
@@ -627,12 +623,6 @@ configure_kernel() {
     ./scripts/config --disable CONFIG_GCOV_KERNEL 2>/dev/null || true
 
     #---------------------------------------------------------------------------
-    # AutoFDO + Propeller (profile-guided optimization)
-    #---------------------------------------------------------------------------
-    ./scripts/config --enable CONFIG_AUTOFDO_CLANG 2>/dev/null || true
-    ./scripts/config --enable CONFIG_PROPELLER_CLANG 2>/dev/null || true
-
-    #---------------------------------------------------------------------------
     # Finalize Configuration
     #---------------------------------------------------------------------------
     # Update config with new options, using defaults for new symbols
@@ -642,7 +632,7 @@ configure_kernel() {
     
     # Show key config values
     log_info "Key configuration values:"
-    grep -E "^CONFIG_(PREEMPT|HZ|ZONE_DEVICE|DEVICE_PRIVATE|HMM_MIRROR|SCHED_BORE|LTO|AUTOFDO|PROPELLER)=" .config 2>/dev/null || true
+    grep -E "^CONFIG_(PREEMPT|HZ|ZONE_DEVICE|DEVICE_PRIVATE|HMM_MIRROR|SCHED_BORE|LTO)=" .config 2>/dev/null || true
 }
 
 #-------------------------------------------------------------------------------
@@ -654,19 +644,8 @@ compile_kernel() {
     log_info "Compiling kernel with Clang/LLVM + ThinLTO, ${NPROC} threads..."
     log_info "This will take a while (20-90 minutes with LTO)..."
     
-    # Build extra flags for AutoFDO/Propeller if profiles exist
-    local extra_flags=""
-    if [[ -f "${AUTOFDO_PROFILE}" ]]; then
-        log_info "AutoFDO profile found - building with PGO!"
-        extra_flags="CLANG_AUTOFDO_PROFILE=${AUTOFDO_PROFILE}"
-    fi
-    if [[ -f "${PROPELLER_PROFILE}_cc_profile.txt" ]]; then
-        log_info "Propeller profiles found - building with Propeller!"
-        extra_flags="${extra_flags} CLANG_PROPELLER_PROFILE_PREFIX=${PROPELLER_PROFILE}"
-    fi
-
     # Compile kernel
-    make ${MAKE_OPTS} ${extra_flags} || log_error "Kernel compilation failed"
+    make ${MAKE_OPTS} || log_error "Kernel compilation failed"
     
     # Compile modules
     log_info "Compiling modules..."
