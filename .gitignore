@@ -1,0 +1,4 @@
+build/
+*.profdata
+propeller*
+perf.data*
